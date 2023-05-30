@@ -69,8 +69,8 @@ const Wallet = () => {
 
   const [urlParams] = useSearchParams();
   const payment = urlParams.get("payment");
-  const url = window.location.href;
-  console.log(url);
+  // const url = window.location.href;
+  // console.log(url);
 
   useEffect(() => {
     if (payment === "successful") {
