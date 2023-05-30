@@ -31,7 +31,7 @@ const Profile = () => {
   const [profile, setProfile] = useState(initialState);
 
   useEffect(() => {
-    if (user === {}) {
+    if (user === null) {
       dispatch(getUser());
     }
   }, [dispatch, user]);

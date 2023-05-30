@@ -82,7 +82,7 @@ const Wallet = () => {
   }, [payment]);
 
   useEffect(() => {
-    if (user === {}) {
+    if (user === null) {
       dispatch(getUser());
     }
   }, [dispatch, user]);
