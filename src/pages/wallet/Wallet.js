@@ -25,8 +25,9 @@ import { toast } from "react-toastify";
 import { validateEmail } from "../../redux/features/auth/authService";
 import { getUser, selectUser } from "../../redux/features/auth/authSlice";
 import DepositModal from "./DepositModal";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import Confetti from "react-confetti";
 import { BACKEND_URL } from "../../utils";
 
 const transactions = [
@@ -56,6 +57,7 @@ const initialDepositState = {
 
 const Wallet = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showTransferModal, setShowTransferModal] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
   const [deposit, setDeposit] = useState(initialDepositState);
@@ -75,16 +77,27 @@ const Wallet = () => {
   useEffect(() => {
     if (payment === "successful") {
       toast.success("Payment successful");
+      setTimeout(() => {
+        console.log("redirect wallet");
+        navigate("/wallet");
+      }, 5000);
     }
     if (payment === "failed") {
       toast.success("Payment Failed, please try again later");
     }
-  }, [payment]);
+    // const myTimeout = setTimeout(() => {
+    //   console.log("redirect wallet");
+    //   navigate("/wallet");
+    // }, 5000);
+    // myTimeout();
+
+    // return () => {
+    //   clearTimeout(myTimeout);
+    // };
+  }, [navigate, payment]);
 
   useEffect(() => {
-    if (user === null) {
-      dispatch(getUser());
-    }
+    dispatch(getUser());
   }, [dispatch, user]);
 
   const closeModal = (e) => {
@@ -164,7 +177,10 @@ const Wallet = () => {
 
   const makeDeposit = async (e) => {
     e.preventDefault();
-    console.log(depositAmount);
+    if (deposit.amount < 1) {
+      return toast.error("Please enter amount greater than 0");
+    }
+    // console.log(depositAmount);
     if (paymentMethod === "stripe") {
       const { data } = await axios.post(
         `${BACKEND_URL}/api/transaction/depositFundStripe`,
@@ -172,10 +188,36 @@ const Wallet = () => {
           amount: depositAmount,
         }
       );
-      console.log(data);
-
+      // console.log(data);
       // window.open(data.url);
       window.location.href = data.url;
+      return;
+    }
+    if (paymentMethod === "flutterwave") {
+      console.log(depositAmount);
+      // eslint-disable-next-line no-undef
+      FlutterwaveCheckout({
+        public_key: process.env.REACT_APP_FLW_PK,
+        tx_ref: "shopito-56454566729894wallet",
+        amount: depositAmount,
+        currency: "USD",
+        payment_options: "card, banktransfer, ussd",
+        redirect_url: "http://localhost:5000/api/transaction/depositFundFLW",
+        //   meta: {
+        //     consumer_id: 23,
+        //     consumer_mac: "92a3-912ba-1192a",
+        //   },
+        customer: {
+          email: user?.email,
+          phone_number: user.phone,
+          name: user.name,
+        },
+        customizations: {
+          title: "Shopito Wallet Deposit",
+          description: "Deposit funds to your shopito wallet",
+          logo: "https://www.logolynx.com/images/logolynx/22/2239ca38f5505fbfce7e55bbc0604386.jpeg",
+        },
+      });
       return;
     }
     toast.error("Please select a payment method.");
@@ -183,6 +225,7 @@ const Wallet = () => {
 
   return (
     <>
+      {payment === "successful" && <Confetti />}
       <section>
         {/* {isLoading && <Loader />} */}
         <div className="container">

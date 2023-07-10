@@ -137,7 +137,7 @@ const ViewProducts = () => {
                       </td>
                       <td className="icons">
                         <span>
-                          <Link to={`/product-detail/${_id}`}>
+                          <Link to={`/product-details/${_id}`}>
                             <AiOutlineEye size={25} color={"purple"} />
                           </Link>
                         </span>

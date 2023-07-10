@@ -25,7 +25,7 @@ const DepositModal = ({
           />
           <div className="--flex-start modal-head --my">
             <AiOutlineInfoCircle color="orangered" size={18} />
-            <h3 className="--text-p --ml">Send Money To Someone.</h3>
+            <h3 className="--text-p --ml">Deposit Funds into your wallet.</h3>
           </div>
           <div className="modal-body">
             <form onSubmit={onSubmit}>

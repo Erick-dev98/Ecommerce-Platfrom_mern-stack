@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -32,10 +32,13 @@ import CheckoutFlutterwave from "./pages/checkout/CheckoutFlutterwave";
 import CheckoutPaypal from "./pages/checkout/CheckoutPaypal";
 import CheckoutWallet from "./pages/checkout/CheckoutWallet";
 import Wallet from "./pages/wallet/Wallet";
+import Wishlist from "./pages/wishlist/Wishlist";
+import { AnimatePresence } from "framer-motion";
 
 axios.defaults.withCredentials = true;
 
 function App() {
+  const location = useLocation();
   const dispatch = useDispatch();
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const user = useSelector(selectUser);
@@ -53,11 +56,10 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
-        <ToastContainer />
-        <Header />
-
-        <Routes>
+      <ToastContainer />
+      <Header />
+      <AnimatePresence>
+        <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -86,6 +88,7 @@ function App() {
           <Route path="/checkout-paypal" element={<CheckoutPaypal />} />
           <Route path="/checkout-wallet" element={<CheckoutWallet />} />
           <Route path="/wallet" element={<Wallet />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/checkout-success" element={<CheckoutSuccess />} />
 
           <Route path="/order-history" element={<OrderHistory />} />
@@ -95,8 +98,8 @@ function App() {
 
           <Route path="*" element={<NotFound />} />
         </Routes>
-        <Footer />
-      </BrowserRouter>
+      </AnimatePresence>
+      <Footer />
     </>
   );
 }

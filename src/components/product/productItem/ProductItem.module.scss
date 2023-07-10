@@ -37,6 +37,9 @@
       p {
         font-weight: 500;
         color: orangered;
+        span {
+          color: var(--color-dark);
+        }
       }
     }
     button {

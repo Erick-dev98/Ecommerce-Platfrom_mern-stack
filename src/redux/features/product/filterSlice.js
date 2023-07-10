@@ -12,8 +12,8 @@ const filterSlice = createSlice({
       const { products, search } = action.payload;
       const tempProducts = products.filter(
         (product) =>
-          product.name.toLowerCase().includes(search.toLowerCase()) ||
-          product.category.toLowerCase().includes(search.toLowerCase())
+          product.name?.toLowerCase().includes(search.toLowerCase()) ||
+          product.category?.toLowerCase().includes(search.toLowerCase())
       );
 
       state.filteredProducts = tempProducts;
@@ -75,7 +75,9 @@ const filterSlice = createSlice({
     FILTER_BY_PRICE(state, action) {
       const { products, price } = action.payload;
       let tempProducts = [];
-      tempProducts = products.filter((product) => product.price <= price);
+      tempProducts = products.filter(
+        (product) => product.price >= price[0] && product.price <= price[1]
+      );
 
       state.filteredProducts = tempProducts;
     },

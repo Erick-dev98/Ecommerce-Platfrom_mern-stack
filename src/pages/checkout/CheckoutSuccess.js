@@ -5,6 +5,7 @@ import {
   CALCULATE_TOTAL_QUANTITY,
   CLEAR_CART,
 } from "../../redux/features/product/cartSlice";
+import Confetti from "react-confetti";
 
 const CheckoutSuccess = () => {
   const dispatch = useDispatch();
@@ -14,17 +15,21 @@ const CheckoutSuccess = () => {
   }, [dispatch]);
 
   return (
-    <section>
-      <div className="container">
-        <h2>Checkout Successful</h2>
-        <p>Thank you for your purchase</p>
-        <br />
+    <>
+      <Confetti />
 
-        <button className="--btn --btn-primary">
-          <Link to="/order-history">View Order Status</Link>
-        </button>
-      </div>
-    </section>
+      <section>
+        <div className="container">
+          <h2>Checkout Successful</h2>
+          <p>Thank you for your purchase</p>
+          <br />
+
+          <button className="--btn --btn-primary">
+            <Link to="/order-history">View Order Status</Link>
+          </button>
+        </div>
+      </section>
+    </>
   );
 };
 

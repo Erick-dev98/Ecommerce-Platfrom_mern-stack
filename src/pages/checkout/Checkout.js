@@ -16,6 +16,7 @@ import {
   selectBillingAddress,
   selectShippingAddress,
 } from "../../redux/features/product/checkoutSlice";
+import { extractIdAndCartQuantity } from "../../utils";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PK);
 
@@ -30,28 +31,37 @@ const Checkout = () => {
 
   const shippingAddress = useSelector(selectShippingAddress);
   const billingAddress = useSelector(selectBillingAddress);
-
+  const { coupon } = useSelector((state) => state.coupon);
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(CALCULATE_SUBTOTAL());
+    dispatch(CALCULATE_SUBTOTAL({ coupon: coupon }));
     dispatch(CALCULATE_TOTAL_QUANTITY());
-  }, [dispatch, cartItems]);
+  }, [dispatch, cartItems, coupon]);
 
   const description = `eShop payment: email: ${customerEmail}, Amount: ${totalAmount}`;
 
+  const productIDs = extractIdAndCartQuantity(cartItems);
+  // console.log(newCartItems);
+  // const newCartTotalAmount = calculateTotalPrice(cartItems, productIDs);
+  // console.log(newCartTotalAmount);
+
   useEffect(() => {
     // Create PaymentIntent as soon as the page loads
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/create-payment-intent`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        items: cartItems,
-        userEmail: customerEmail,
-        shipping: shippingAddress,
-        billing: billingAddress,
-        description,
-      }),
-    })
+    fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/api/order/create-payment-intent`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: productIDs,
+          userEmail: customerEmail,
+          shipping: shippingAddress,
+          billing: billingAddress,
+          description,
+          coupon,
+        }),
+      }
+    )
       .then((res) => {
         if (res.ok) {
           return res.json();
@@ -77,6 +87,7 @@ const Checkout = () => {
 
   return (
     <>
+      {/* <pre>{JSON.stringify(newCartItems, null, 2)}</pre> */}
       <section>
         <div className="container">{!clientSecret && <h3>{message}</h3>}</div>
       </section>

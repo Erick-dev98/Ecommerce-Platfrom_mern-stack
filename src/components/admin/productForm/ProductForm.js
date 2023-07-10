@@ -18,6 +18,9 @@ const ProductForm = ({
   handleInputChange,
   handleImageChange,
   saveProduct,
+  categories,
+  filteredBrands,
+  isEditing,
 }) => {
   const img =
     "https://res.cloudinary.com/zinotrust/image/upload/v1674999036/nhq5gqr1xecrkipneiup.jpg";
@@ -77,23 +80,77 @@ const ProductForm = ({
           />
 
           <label>Product Category:</label>
-          <input
+          <select
+            name="category"
+            value={product?.category}
+            className="form-control"
+            onChange={handleInputChange}
+          >
+            {isEditing ? (
+              <option>{product?.category}</option>
+            ) : (
+              <option>Select Category</option>
+            )}
+            {categories.length > 0 &&
+              categories.map((cat) => (
+                <option key={cat._id} value={cat._name}>
+                  {cat.name}
+                </option>
+              ))}
+          </select>
+
+          {/* <input
             type="text"
             placeholder="Product Category"
             name="category"
             value={product?.category}
             onChange={handleInputChange}
-          />
+          /> */}
 
           <label>Product Brand:</label>
-          <input
+          <select
+            name="brand"
+            value={product?.brand}
+            className="form-control"
+            onChange={handleInputChange}
+          >
+            {isEditing ? (
+              <option>{product?.brand}</option>
+            ) : (
+              <option>Select Brand</option>
+            )}
+
+            {filteredBrands.length > 0 &&
+              filteredBrands.map((brand) => (
+                <option key={brand._id} value={brand.name}>
+                  {brand.name}
+                </option>
+              ))}
+          </select>
+          {/* <input
             type="text"
             placeholder="Brand"
             name="brand"
             value={product?.brand}
             onChange={handleInputChange}
+          /> */}
+          <label>Product Color:</label>
+          <input
+            type="text"
+            placeholder="Color"
+            name="color"
+            value={product?.color}
+            onChange={handleInputChange}
           />
 
+          <label>Regular Price:</label>
+          <input
+            type="text"
+            placeholder="Regular Price"
+            name="regularPrice"
+            value={product?.regularPrice}
+            onChange={handleInputChange}
+          />
           <label>Product Price:</label>
           <input
             type="text"

@@ -36,6 +36,7 @@ const CheckoutForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
+  const { coupon } = useSelector((state) => state.coupon);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -71,6 +72,7 @@ const CheckoutForm = () => {
       cartItems,
       shippingAddress,
       paymentMethod,
+      coupon: coupon != null ? coupon : { name: "nil" },
     };
     console.log(formData);
     dispatch(createOrder(formData));

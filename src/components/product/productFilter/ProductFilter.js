@@ -6,23 +6,24 @@ import {
   FILTER_BY_CATEGORY,
   FILTER_BY_PRICE,
 } from "../../../redux/features/product/filterSlice";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
+import { GET_PRICE_RANGE } from "../../../redux/features/product/productSlice";
 
 const ProductFilter = () => {
-  const [category, setCategory] = useState("All");
-  const [brand, setBrand] = useState("All");
-  const [price, setPrice] = useState(3000);
-  // const products = useSelector(selectProducts);
-  // const minPrice = useSelector(selectMinPrice);
-  // const maxPrice = useSelector(selectMaxPrice);
-
   const { products, minPrice, maxPrice } = useSelector(
     (state) => state.product
   );
+  // console.log(minPrice, maxPrice);
+  const [category, setCategory] = useState("All");
+  const [brand, setBrand] = useState("All");
+  const [price, setPrice] = useState([50, 1500]);
+
   const dispatch = useDispatch();
 
   const allCategories = [
     "All",
-    ...new Set(products.map((product) => product.category)),
+    ...new Set(products?.map((product) => product.category)),
   ];
   const allBrands = [
     "All",
@@ -31,11 +32,16 @@ const ProductFilter = () => {
   // console.log(allBrands);
 
   useEffect(() => {
+    dispatch(GET_PRICE_RANGE({ products }));
+  }, [dispatch, products]);
+
+  useEffect(() => {
     dispatch(FILTER_BY_BRAND({ products, brand }));
   }, [dispatch, products, brand]);
 
   useEffect(() => {
     dispatch(FILTER_BY_PRICE({ products, price }));
+    // console.log(price);
   }, [dispatch, products, price]);
 
   const filterProducts = (cat) => {
@@ -78,16 +84,28 @@ const ProductFilter = () => {
           })}
         </select>
         <h4>Price</h4>
-        <p>{`$${price}`}</p>
+        {/* <Range /> */}
+
         <div className={styles.price}>
-          <input
-            type="range"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
+          <Slider
+            range
+            marks={{
+              1: `${price[0]}`,
+              1000: `${price[1]}`,
+            }}
             min={minPrice}
             max={maxPrice}
+            defaultValue={[minPrice, maxPrice]}
+            tipFormatter={(value) => `$${value}`}
+            tipProps={{
+              placement: "top",
+              visible: true,
+            }}
+            value={price}
+            onChange={(price) => setPrice(price)}
           />
         </div>
+        <br />
         <br />
         <button className="--btn --btn-danger" onClick={clearFilters}>
           Clear Filter

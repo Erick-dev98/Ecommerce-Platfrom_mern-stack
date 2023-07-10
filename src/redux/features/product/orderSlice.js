@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 const initialState = {
   order: null,
   orders: [],
+  totalOrderAmount: 0,
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -90,7 +91,19 @@ export const updateOrderStatus = createAsyncThunk(
 const orderSlice = createSlice({
   name: "order",
   initialState,
-  reducers: {},
+  reducers: {
+    CALC_TOTAL_ORDER_AMOUNT(state, action) {
+      const array = [];
+      state.orders.map((item) => {
+        const { orderAmount } = item;
+        return array.push(orderAmount);
+      });
+      const totalAmount = array.reduce((a, b) => {
+        return a + b;
+      }, 0);
+      state.totalOrderAmount = totalAmount;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createOrder.pending, (state) => {
@@ -159,8 +172,9 @@ const orderSlice = createSlice({
   },
 });
 
-export const {} = orderSlice.actions;
+export const { CALC_TOTAL_ORDER_AMOUNT } = orderSlice.actions;
 
 export const selectOrders = (state) => state.order.orders;
+export const selectTotalOrderAmount = (state) => state.order.totalOrderAmount;
 
 export default orderSlice.reducer;

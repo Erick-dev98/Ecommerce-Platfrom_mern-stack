@@ -316,6 +316,11 @@ p {
   background: #28a745;
 }
 
+.--btn-red {
+  color: #fff;
+  background: rgba(189, 9, 9, 0.847);
+}
+
 /* Background */
 .--bg-light {
   background: #fff;
@@ -493,4 +498,25 @@ a:hover {
 .formgroup {
   border: 1px solid var(--dark-blue);
   padding: 5px;
+}
+
+.--hr {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 1rem;
+}
+
+.activeImg {
+  border: 1px solid var(--color-orange);
+}
+
+.--underline {
+  border-bottom: 1px solid #ccc;
+}
+
+.react-star-rate__star {
+  color: red;
+}
+
+.--cursor {
+  cursor: pointer;
 }

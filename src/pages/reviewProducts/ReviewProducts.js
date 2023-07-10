@@ -10,15 +10,19 @@ import {
   deleteReview,
   getProduct,
   reviewProduct,
+  updateReview,
 } from "../../redux/features/product/productSlice";
 import { toast } from "react-toastify";
 import { BsTrash } from "react-icons/bs";
+import StarRating from "react-star-ratings";
+import { FaEdit } from "react-icons/fa";
 
 const ReviewProducts = () => {
   const { id } = useParams();
   const [rate, setRate] = useState(0);
   const [review, setReview] = useState("");
   const [userReview, setUserReview] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
 
   const { isLoading, isError, message, product } = useSelector(
     (state) => state.product
@@ -58,6 +62,28 @@ const ReviewProducts = () => {
     await dispatch(deleteReview({ id, formData }));
     navigate(-1);
   };
+  const startEdit = async () => {
+    setIsEditing(true);
+    setRate(userReview[0].star);
+    setReview(userReview[0].review);
+  };
+  const editReview = async (e) => {
+    e.preventDefault();
+    const today = new Date();
+    const date = today.toDateString();
+    if (rate === 0 || review === "") {
+      return toast.error("Please enter rating and review");
+    }
+    const formData = {
+      star: rate,
+      review,
+      reviewDate: date,
+      userID: userReview[0].userID,
+    };
+    // console.log(formData);
+    await dispatch(updateReview({ id, formData }));
+    navigate(-1);
+  };
   // console.log(product?.ratings);
   useEffect(() => {
     const reviewed = product?.ratings.filter((rev) => {
@@ -65,6 +91,11 @@ const ReviewProducts = () => {
     });
     setUserReview(reviewed);
   }, [product, user]);
+
+  const changeStar = (newRating, name) => {
+    setRate(newRating);
+    // console.table(newRating, name);
+  };
 
   return (
     <section>
@@ -85,16 +116,24 @@ const ReviewProducts = () => {
             />
           </>
         )}
-        {userReview?.length > 0 ? (
+        {userReview?.length > 0 && !isEditing ? (
           <Card cardClass={"card"}>
             <h3>Product Reviews</h3>
             <div>
               {userReview.map((item, index) => {
-                const { rate, review, reviewDate, name, userID } = item;
+                const { star, review, reviewDate, name, userID } = item;
                 return (
                   <div key={index} className="review --flex-between --p">
                     <div>
-                      <StarsRating value={rate} />
+                      {/* <StarsRating value={rate} /> */}
+                      <StarRating
+                        starDimension="20px"
+                        starSpacing="2px"
+                        starRatedColor="#F6B01E"
+                        rating={star}
+                        changeRating={changeStar}
+                        editing={false}
+                      />
                       <p>{review}</p>
                       <span>
                         <b>{reviewDate}</b>
@@ -104,7 +143,14 @@ const ReviewProducts = () => {
                         <b>by: {name}</b>
                       </span>
                     </div>
-                    <BsTrash color="red" size={25} onClick={delReview} />
+                    <div>
+                      <FaEdit
+                        color="green"
+                        size={25}
+                        onClick={() => startEdit()}
+                      />
+                      <BsTrash color="red" size={25} onClick={delReview} />
+                    </div>
                   </div>
                 );
               })}
@@ -112,13 +158,17 @@ const ReviewProducts = () => {
           </Card>
         ) : (
           <Card cardClass={"card --width-500px --p"}>
-            <form onSubmit={(e) => submitReview(e)}>
+            <form>
               <label>Rating:</label>
-              <StarsRating
-                value={rate}
-                onChange={(rate) => {
-                  setRate(rate);
-                }}
+              <StarRating
+                starDimension="20px"
+                starSpacing="2px"
+                starRatedColor="#F6B01E"
+                starHoverColor="#F6B01E"
+                rating={rate}
+                changeRating={changeStar}
+                editing={true}
+                isSelectable={true}
               />
               <label>Review</label>
               <textarea
@@ -128,9 +178,26 @@ const ReviewProducts = () => {
                 cols="30"
                 rows="10"
               ></textarea>
-              <button type="submit" className="--btn --btn-primary">
-                Submit Review
-              </button>
+              {!isEditing ? (
+                <button
+                  onClick={(e) => submitReview(e)}
+                  className="--btn --btn-primary"
+                >
+                  Submit Review
+                </button>
+              ) : (
+                <div className="--flex-start">
+                  <button
+                    onClick={(e) => editReview(e)}
+                    className="--btn --btn-primary"
+                  >
+                    Update Review
+                  </button>
+                  <button onClick={() => setIsEditing(false)} className="--btn">
+                    Cancel
+                  </button>
+                </div>
+              )}
             </form>
           </Card>
         )}

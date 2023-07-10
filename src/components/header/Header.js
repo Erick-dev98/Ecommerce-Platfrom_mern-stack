@@ -13,7 +13,7 @@ import {
   selectCartTotalQuantity,
 } from "../../redux/features/product/cartSlice";
 
-const logo = (
+export const logo = (
   <div className={styles.logo}>
     <Link to="/">
       <h2>
@@ -57,7 +57,9 @@ const Header = () => {
   const logoutUser = async () => {
     dispatch(RESET_AUTH());
     await dispatch(logout());
+    localStorage.setItem("cartItems", JSON.stringify([]));
     navigate("/login");
+    window.location.reload();
   };
 
   const cart = (

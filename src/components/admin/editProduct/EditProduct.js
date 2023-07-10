@@ -10,6 +10,10 @@ import {
   selectProduct,
   updateProduct,
 } from "../../../redux/features/product/productSlice";
+import {
+  getBrands,
+  getCategories,
+} from "../../../redux/features/categoryAndBrand/categoryAndBrandSlice";
 
 const EditProduct = () => {
   const { id } = useParams();
@@ -23,6 +27,24 @@ const EditProduct = () => {
   const [productImage, setProductImage] = useState("");
   const [imagePreview, setImagePreview] = useState([]);
   const [description, setDescription] = useState("");
+  const { categories, brands } = useSelector((state) => state.category);
+
+  useEffect(() => {
+    dispatch(getCategories());
+    dispatch(getBrands());
+  }, [dispatch]);
+
+  const [filteredBrands, setFilteredBrands] = useState([]);
+  function filterBrands(selectedCategoryName) {
+    const newBrands = brands.filter(
+      (brand) => brand.category === selectedCategoryName
+    );
+    setFilteredBrands(newBrands);
+  }
+  useEffect(() => {
+    filterBrands(product?.category);
+    // console.log(filteredBrands);
+  }, [product?.category]);
 
   useEffect(() => {
     dispatch(getProduct(id));
@@ -55,7 +77,9 @@ const EditProduct = () => {
       name: product?.name,
       category: product?.category,
       brand: product?.brand,
+      color: product?.color,
       quantity: Number(product?.quantity),
+      regularPrice: product?.regularPrice,
       price: product?.price,
       description: description,
       image: files,
@@ -83,6 +107,9 @@ const EditProduct = () => {
         setDescription={setDescription}
         handleInputChange={handleInputChange}
         saveProduct={saveProduct}
+        categories={categories}
+        filteredBrands={filteredBrands}
+        isEditing={true}
       />
     </div>
   );

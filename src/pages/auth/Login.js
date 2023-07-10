@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RESET_AUTH, login } from "../../redux/features/auth/authSlice";
 import { validateEmail } from "../../redux/features/auth/authService";
 import { useSearchParams } from "react-router-dom";
+import { getCartDB, saveCartDB } from "../../redux/features/product/cartSlice";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -43,9 +44,16 @@ const Login = () => {
   useEffect(() => {
     if (isLoggedIn && isSuccess) {
       if (redirect === "cart") {
+        dispatch(
+          saveCartDB({
+            cartItems: JSON.parse(localStorage.getItem("cartItems")),
+          })
+        );
         return navigate("/cart");
       }
-      navigate("/");
+      dispatch(getCartDB());
+      // navigate("/");
+      // window.location.reload();
     }
 
     dispatch(RESET_AUTH());

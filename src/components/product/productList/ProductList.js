@@ -18,6 +18,7 @@ const ProductList = ({ products }) => {
   const [sort, setSort] = useState("latest");
   const filteredProducts = useSelector(selectFilteredProducts);
   const dispatch = useDispatch();
+  // console.log(products);
 
   //   Begin Pagination
   const [currentItems, setCurrentItems] = useState([]);
@@ -80,7 +81,7 @@ const ProductList = ({ products }) => {
       </div>
 
       <div className={grid ? `${styles.grid}` : `${styles.list}`}>
-        {products.lenght === 0 ? (
+        {products.length === 0 ? (
           <p>No product found.</p>
         ) : (
           <>

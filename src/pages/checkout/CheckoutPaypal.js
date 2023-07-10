@@ -35,9 +35,9 @@ const CheckoutPaypal = () => {
 
   const [urlParams] = useSearchParams();
   const payment = urlParams.get("payment");
-
+  const { coupon } = useSelector((state) => state.coupon);
   useEffect(() => {
-    dispatch(CALCULATE_SUBTOTAL());
+    dispatch(CALCULATE_SUBTOTAL({ coupon: coupon }));
   }, [cartItems, dispatch]);
 
   // Save order to Order History
@@ -51,6 +51,7 @@ const CheckoutPaypal = () => {
       cartItems,
       shippingAddress,
       paymentMethod,
+      coupon: coupon != null ? coupon : { name: "nil" },
     };
     console.log(formData);
     dispatch(createOrder(formData));

@@ -18,12 +18,15 @@ import { useDispatch } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { createOrder } from "../../redux/features/product/orderSlice";
 import { toast } from "react-toastify";
+import { BACKEND_URL, extractIdAndCartQuantity } from "../../utils";
+import axios from "axios";
+import Confetti from "react-confetti";
 
 const CheckoutFlutterwave = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(selectUser);
-  console.log(user);
+  // console.log(user);
   const cartTotalAmount = useSelector(selectCartTotalAmount);
   const cartItems = useSelector(selectCartItems);
   const shippingAddress = useSelector(selectShippingAddress);
@@ -31,9 +34,10 @@ const CheckoutFlutterwave = () => {
 
   const [urlParams] = useSearchParams();
   const payment = urlParams.get("payment");
-
+  const ref = urlParams.get("ref");
+  const { coupon } = useSelector((state) => state.coupon);
   useEffect(() => {
-    dispatch(CALCULATE_SUBTOTAL());
+    dispatch(CALCULATE_SUBTOTAL({ coupon: coupon }));
   }, [cartItems, dispatch]);
 
   // Save order to Order History
@@ -47,21 +51,30 @@ const CheckoutFlutterwave = () => {
       cartItems,
       shippingAddress,
       paymentMethod,
+      coupon: coupon != null ? coupon : { name: "nil" },
     };
     console.log(formData);
     dispatch(createOrder(formData));
-    navigate("/checkout-success");
   };
 
   useEffect(() => {
-    if (payment === "successful" && cartTotalAmount > 0) {
+    if (
+      payment === "successful" &&
+      ref === process.env.REACT_APP_TX_REF &&
+      cartTotalAmount > 0
+    ) {
       toast.success("Payment successful");
       saveOrder();
     }
     if (payment === "failed") {
       toast.success("Payment Failed, please try again later");
     }
-  }, [payment, cartTotalAmount]);
+    setTimeout(() => {
+      if (payment === "successful" && ref === process.env.REACT_APP_TX_REF) {
+        navigate("/checkout-success");
+      }
+    }, 5000);
+  }, [payment, cartTotalAmount, navigate, ref]);
 
   const handleSubmit = () => {};
 
@@ -69,11 +82,11 @@ const CheckoutFlutterwave = () => {
     // eslint-disable-next-line no-undef
     FlutterwaveCheckout({
       public_key: process.env.REACT_APP_FLW_PK,
-      tx_ref: "shopito-48981487343MDI0NzMx",
+      tx_ref: process.env.REACT_APP_TX_REF,
       amount: cartTotalAmount,
       currency: "USD",
       payment_options: "card, banktransfer, ussd",
-      redirect_url: "http://localhost:5000/response",
+      redirect_url: `${process.env.REACT_APP_BACKEND_URL}/api/order/response`,
       //   meta: {
       //     consumer_id: 23,
       //     consumer_mac: "92a3-912ba-1192a",
@@ -91,49 +104,52 @@ const CheckoutFlutterwave = () => {
     });
   }
 
+  const productIDs = extractIdAndCartQuantity(cartItems);
+
+  const payWithFlutterwave = async () => {
+    const response = await axios.post(
+      `${BACKEND_URL}/api/order/payWithFlutterwave`,
+      {
+        items: productIDs,
+        userID: user._id,
+      }
+    );
+    console.log(response.data);
+    // window.open(data.url);
+    window.open(response.data.data.link);
+    // window.location.href = response.data.data.link;
+    return response.data;
+  };
+
   return (
-    <section>
-      <div className={`container ${styles.checkout}`}>
-        <h2>Checkout</h2>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <Card cardClass={styles.card}>
-              <CheckoutSummary />
-            </Card>
-          </div>
-          <div>
-            <Card cardClass={`${styles.card} ${styles.pay}`}>
-              <h3>Flutterwave Checkout</h3>
+    <>
+      {payment === "successful" && <Confetti />}
 
-              {/* <button
-                id="submit"
-                className={styles.button}
-                onClick={() => {
-                  handleFlutterPayment({
-                    callback: (response) => {
-                      console.log(response);
-                      closePaymentModal(); // this will close the modal programmatically
-                    },
-                    onClose: () => {},
-                  });
-                }}
-              >
-                Pay Now
-              </button> */}
-
-              {/* <FlutterWaveButton {...fwConfig} /> */}
-              <button
-                type="button"
-                className={styles.button}
-                onClick={makePayment}
-              >
-                Pay Now
-              </button>
-            </Card>
-          </div>
-        </form>
-      </div>
-    </section>
+      <section>
+        <div className={`container ${styles.checkout}`}>
+          <h2>Checkout</h2>
+          <form onSubmit={handleSubmit}>
+            <div>
+              <Card cardClass={styles.card}>
+                <CheckoutSummary />
+              </Card>
+            </div>
+            <div>
+              <Card cardClass={`${styles.card} ${styles.pay}`}>
+                <h3>Flutterwave Checkout</h3>
+                <button
+                  type="button"
+                  className={styles.button}
+                  onClick={makePayment}
+                >
+                  Pay Now
+                </button>
+              </Card>
+            </div>
+          </form>
+        </div>
+      </section>
+    </>
   );
 };
 

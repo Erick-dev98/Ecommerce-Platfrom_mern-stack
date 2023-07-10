@@ -44,6 +44,12 @@ const deleteReview = async (id, formData) => {
   return response.data.message;
 };
 
+// Review Product
+const updateReview = async (id, formData) => {
+  const response = await axios.patch(`${API_URL}updateReview/${id}`, formData);
+  return response.data.message;
+};
+
 const productService = {
   createProduct,
   getProducts,
@@ -52,6 +58,7 @@ const productService = {
   updateProduct,
   reviewProduct,
   deleteReview,
+  updateReview,
 };
 
 export default productService;

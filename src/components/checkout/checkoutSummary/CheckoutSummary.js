@@ -11,8 +11,10 @@ import {
 import styles from "./CheckoutSummary.module.scss";
 import Card from "../../card/Card";
 import { useDispatch } from "react-redux";
+import { CartDiscount } from "../../verifyCoupon/VerifyCoupon";
 
 const CheckoutSummary = () => {
+  const { coupon } = useSelector((state) => state.coupon);
   const cartItems = useSelector(selectCartItems);
   // console.log(cartItems);
   const cartTotalAmount = useSelector(selectCartTotalAmount);
@@ -20,8 +22,8 @@ const CheckoutSummary = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(CALCULATE_SUBTOTAL());
-  }, [cartItems, dispatch]);
+    dispatch(CALCULATE_SUBTOTAL({ coupon: coupon }));
+  }, [cartItems, dispatch, coupon]);
 
   return (
     <div>
@@ -44,6 +46,7 @@ const CheckoutSummary = () => {
               <h4>Subtotal:</h4>
               <h3>{cartTotalAmount.toFixed(2)}</h3>
             </div>
+            <CartDiscount />
             {cartItems.map((item, index) => {
               const { _id, name, price, cartQuantity } = item;
               return (

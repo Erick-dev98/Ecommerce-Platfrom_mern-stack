@@ -7,6 +7,7 @@ import {
   CLEAR_CART,
   DECREASE_CART,
   REMOVE_FROM_CART,
+  saveCartDB,
   selectCartItems,
   selectCartTotalAmount,
   selectCartTotalQuantity,
@@ -23,6 +24,8 @@ import {
   SAVE_PAYMENT_METHOD,
   selectPaymentMethod,
 } from "../../redux/features/product/checkoutSlice";
+import { getCartQuantityById } from "../../utils";
+import VerifyCoupon from "../../components/verifyCoupon/VerifyCoupon";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -32,33 +35,44 @@ const Cart = () => {
   const cartTotalQuantity = useSelector(selectCartTotalQuantity);
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const [paymentMethod, setPaymentMethod] = useState("");
-  const paymentMethodRedux = useSelector(selectPaymentMethod);
-  // useEffect(() => {
-  //   if (paymentMethodRedux !== "") {
-  //     setPaymentMethod(paymentMethodRedux);
-  //   }
-  // }, [paymentMethodRedux, paymentMethod]);
+
+  // console.log(cartItems);
 
   const increaseCart = (cart) => {
+    // const cartQuantity = getCartQuantityById(cartItems, cart._id);
+    // if (cartQuantity === cart.quantity) {
+    //   return toast.info("Max number of product reached!!!");
+    // }
     dispatch(ADD_TO_CART(cart));
+    dispatch(
+      saveCartDB({ cartItems: JSON.parse(localStorage.getItem("cartItems")) })
+    );
   };
 
   const decreaseCart = (cart) => {
     dispatch(DECREASE_CART(cart));
+    dispatch(
+      saveCartDB({ cartItems: JSON.parse(localStorage.getItem("cartItems")) })
+    );
   };
 
   const removeFromCart = (cart) => {
     dispatch(REMOVE_FROM_CART(cart));
+    dispatch(
+      saveCartDB({ cartItems: JSON.parse(localStorage.getItem("cartItems")) })
+    );
   };
 
   const clearCart = () => {
     dispatch(CLEAR_CART());
+    dispatch(saveCartDB({ cartItems: [] }));
   };
 
+  const { coupon } = useSelector((state) => state.coupon);
   useEffect(() => {
-    dispatch(CALCULATE_SUBTOTAL());
+    dispatch(CALCULATE_SUBTOTAL({ coupon }));
     dispatch(CALCULATE_TOTAL_QUANTITY());
-  }, [cartItems, dispatch]);
+  }, [cartItems, dispatch, coupon]);
 
   const handlePaymentChange = (e) => {
     setPaymentMethod(e.target.value);
@@ -78,12 +92,13 @@ const Cart = () => {
       navigate("/login?redirect=cart");
     }
   };
-
+  // console.log(cartItems);
   return (
     <section>
       <div className={`container ${styles.table}`}>
+        {/* <pre>{JSON.stringify(cartItems, null, 2)}</pre> */}
         <h2>Shopping Cart</h2>
-        {cartItems.length === 0 ? (
+        {cartItems?.length === 0 ? (
           <>
             <p>Your cart is currently empty.</p>
             <br />
@@ -105,7 +120,7 @@ const Cart = () => {
                 </tr>
               </thead>
               <tbody>
-                {cartItems.map((cart, index) => {
+                {cartItems?.map((cart, index) => {
                   const { _id, name, price, image, cartQuantity } = cart;
                   return (
                     <tr key={_id}>
@@ -168,9 +183,10 @@ const Cart = () => {
                   </p>
                   <div className={styles.text}>
                     <h4>Subtotal:</h4>
-                    <h3>{`$${cartTotalAmount.toFixed(2)}`}</h3>
+                    <h3>{`$${cartTotalAmount?.toFixed(2)}`}</h3>
                   </div>
-                  <hr />
+                  <VerifyCoupon />
+                  <div className="--underline --mb"></div>
                   <p>Please choose a payment method</p>
                   <form className="--form-control" onSubmit={setPayment}>
                     <label htmlFor={"stripe"} className="radio-label">
