@@ -52,7 +52,7 @@ const ProductFilter = () => {
   const clearFilters = () => {
     setCategory("All");
     setBrand("All");
-    setPrice(maxPrice);
+    setPrice([minPrice, maxPrice]);
   };
 
   return (
