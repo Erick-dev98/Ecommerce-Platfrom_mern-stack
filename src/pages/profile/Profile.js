@@ -121,7 +121,7 @@ const Profile = () => {
       toast.error(error.message);
     }
   };
-
+  console.log(profile);
   return (
     <>
       <section>
@@ -196,7 +196,7 @@ const Profile = () => {
                       <input
                         type="text"
                         name="address"
-                        value={profile?.address?.address?.address}
+                        value={profile?.address?.address}
                         onChange={handleInputChange}
                       />
                     </p>
@@ -205,7 +205,7 @@ const Profile = () => {
                       <input
                         type="text"
                         name="state"
-                        value={profile?.address?.address?.state}
+                        value={profile?.address?.state}
                         onChange={handleInputChange}
                       />
                     </p>
@@ -214,7 +214,7 @@ const Profile = () => {
                       <input
                         type="text"
                         name="country"
-                        value={profile?.address?.address?.country}
+                        value={profile?.address?.country}
                         onChange={handleInputChange}
                       />
                     </p>
