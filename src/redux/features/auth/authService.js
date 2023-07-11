@@ -50,6 +50,12 @@ const updateUser = async (userData) => {
   return response.data;
 };
 
+// Update Photo
+const updatePhoto = async (userData) => {
+  const response = await axios.patch(API_URL + "updatePhoto", userData);
+  return response.data;
+};
+
 // Send Verification Email
 const sendVerificationEmail = async () => {
   const response = await axios.post(API_URL + "sendVerificationEmail");
@@ -165,6 +171,7 @@ const authService = {
   getUsers,
   deleteUser,
   upgradeUser,
+  updatePhoto,
   sendLoginCode,
   loginWithCode,
   loginWithGoogle,

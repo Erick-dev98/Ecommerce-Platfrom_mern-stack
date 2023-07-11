@@ -7,12 +7,17 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getUser,
   selectUser,
+  updatePhoto,
   updateUser,
 } from "../../redux/features/auth/authSlice";
 import Loader from "../../components/loader/Loader";
 import { toast } from "react-toastify";
 import { shortenText } from "../../utils";
 import PageMenu from "../../components/pageMenu/PageMenu";
+import { AiOutlineCloudUpload } from "react-icons/ai";
+
+const cloud_name = process.env.REACT_APP_CLOUD_NAME;
+const upload_preset = process.env.REACT_APP_UPLOAD_PRESET;
 
 const Profile = () => {
   // useRedirectLoggedOutUser("/login");
@@ -29,6 +34,50 @@ const Profile = () => {
     address: user?.address || {},
   };
   const [profile, setProfile] = useState(initialState);
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const handleImageChange = (e) => {
+    setProfileImage(e.target.files[0]);
+    setImagePreview(URL.createObjectURL(e.target.files[0]));
+  };
+
+  const savePhoto = async (e) => {
+    e.preventDefault();
+    let imageURL;
+    try {
+      if (
+        profileImage !== null &&
+        (profileImage.type === "image/jpeg" ||
+          profileImage.type === "image/jpg" ||
+          profileImage.type === "image/png")
+      ) {
+        const image = new FormData();
+        image.append("file", profileImage);
+        image.append("cloud_name", cloud_name);
+        image.append("upload_preset", upload_preset);
+
+        // Save image to Cloudinary
+        const response = await fetch(
+          "https://api.cloudinary.com/v1_1/zinotrust/image/upload",
+          { method: "post", body: image }
+        );
+        const imgData = await response.json();
+        console.log(imgData);
+        imageURL = imgData.url.toString();
+      }
+
+      // Save photo to MongoDB
+      const userData = {
+        photo: profileImage ? imageURL : profile.photo,
+      };
+
+      dispatch(updatePhoto(userData));
+      setImagePreview(null);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   useEffect(() => {
     if (user === null) {
@@ -84,7 +133,36 @@ const Profile = () => {
             <Card cardClass={"card"}>
               {!isLoading && user && (
                 <>
+                  <div className="profile-photo">
+                    <div>
+                      <img
+                        src={imagePreview === null ? user?.photo : imagePreview}
+                        alt="Profileimg"
+                      />
+                      <h3>Role: {profile.role}</h3>
+                      {imagePreview !== null && (
+                        <div className="--center-all">
+                          <button
+                            className="--btn --btn-secondary"
+                            onClick={savePhoto}
+                          >
+                            <AiOutlineCloudUpload size={18} /> &nbsp; Upload
+                            Photo
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   <form onSubmit={saveProfile}>
+                    <p>
+                      <label>Change Photo:</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        name="image"
+                        onChange={handleImageChange}
+                      />
+                    </p>
                     <p>
                       <label>Name:</label>
                       <input

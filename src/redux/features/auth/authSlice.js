@@ -113,6 +113,23 @@ export const updateUser = createAsyncThunk(
     }
   }
 );
+// Update Photo
+export const updatePhoto = createAsyncThunk(
+  "auth/updatePhoto",
+  async (userData, thunkAPI) => {
+    try {
+      return await authService.updatePhoto(userData);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 // change Password
 export const changePassword = createAsyncThunk(
@@ -325,6 +342,23 @@ const authSlice = createSlice({
         toast.success("User Updated");
       })
       .addCase(updateUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        toast.error(action.payload);
+      })
+      // Update pHOTO
+      .addCase(updatePhoto.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updatePhoto.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.isLoggedIn = true;
+        state.user = action.payload;
+        toast.success("User Photo Updated");
+      })
+      .addCase(updatePhoto.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
