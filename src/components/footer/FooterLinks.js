@@ -51,7 +51,6 @@ const FooterLinks = () => {
           <div className="footer-menu">
             <p className="link-heading">Resources</p>
             <ul className="nav-ul footer-links">
-              Name
               <li>
                 <a href="#">Blog</a>
               </li>
