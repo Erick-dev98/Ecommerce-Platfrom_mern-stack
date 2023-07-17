@@ -19,8 +19,6 @@ import { addToWishlist } from "../../../redux/features/auth/authSlice";
 import StarRating from "react-star-ratings";
 import { calculateAverageRating, getCartQuantityById } from "../../../utils";
 import ProductRating from "../productRating/ProductRating";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { Carousel } from "react-responsive-carousel";
 import { toast } from "react-toastify";
 import ProductRatingSummary from "../productRating/productRatingSummary";
 

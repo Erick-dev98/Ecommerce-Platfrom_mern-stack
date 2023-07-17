@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import "./ReviewProducts.module.scss";
-import StarsRating from "react-star-rate";
+// import StarsRating from "react-star-rate";
 import Card from "../../components/card/Card";
 import { Spinner } from "../../components/loader/Loader";
 import { useDispatch } from "react-redux";
