@@ -32,7 +32,11 @@ const HomeInfoBox = () => {
             const {icon, heading, text} = item;
             return(
                 <div className='infobox' key={index}>
-                    <div className='icon'></div>
+                    <div className='icon'>{icon}</div>
+                    <div className='text'>
+                        <h4>{heading}</h4>
+                        <p className='--text-sm'>{text}</p>
+                    </div>
                 </div>
             )
         })}
