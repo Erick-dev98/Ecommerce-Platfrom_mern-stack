@@ -2,7 +2,7 @@ import React from 'react';
 import "./FooterLinks.scss";
 import { FaFacebook, FaInstagram, FaTwitter, FaWhatsapp, FaYoutube } from 'react-icons/fa';
 import logoImg from "../../assets/shopito_logo.png";
-import styles from "./Header.module.scss";
+import styles from ".././Header.module.scss";
 
 const FooterLinks = () => {
   return (
@@ -23,7 +23,7 @@ const FooterLinks = () => {
 
        <section className='footer-section'>
         <div className='container footer'>
-            <div className='footer-logo'>
+            <div className={styles.logo}>
             <h2>
                 Shop<span>Mpya</span>
             </h2>
