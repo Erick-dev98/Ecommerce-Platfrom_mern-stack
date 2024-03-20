@@ -7,6 +7,15 @@
     z-index: 0;
     overflow: hidden;
   }
+
+  .logo h2{
+    width: 25%;
+    color: #fff;
+    cursor: pointer;
+    span {
+      color: orangered;
+    }
+  }
   
   .contact-section::before {
     content: "";
