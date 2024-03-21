@@ -11,7 +11,7 @@ const ProductCarousel = ({ products }) => {
           responsive={responsive}
           infinite={true}
           autoPlay={true}
-          autoPlaySpeed={3000}
+          autoPlaySpeed={1000}
           customTransition="all .5"
           //customTransition="all 500ms ease" 
           transitionDuration={1000}
