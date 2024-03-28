@@ -40,13 +40,25 @@ const getUser = async () => {
 const updateUser = async (userData) => {
     const response = await axios.patch(API_URL + "updateUser", userData);
     return response.data;
-};
+}; 
 
 // Update Photo
+// const updatePhoto = async (userData) => {
+//     const response = await axios.patch(API_URL + "updatePhoto", userData);
+//     return response.data;
+// };
+// Update Photo
 const updatePhoto = async (userData) => {
-    const response = await axios.patch(API_URL + "updatePhoto", userData);
-    return response.data;
+    try {
+        const response = await axios.patch(API_URL + "updatePhoto", userData, {
+            withCredentials: true, // Ensure credentials (i.e., cookies including the auth token) are sent with the request
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response.data.message); // Handle errors properly
+    }
 };
+
 
 const authService = {
     register,

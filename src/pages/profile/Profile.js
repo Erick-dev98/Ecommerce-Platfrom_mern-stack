@@ -97,9 +97,16 @@ const Profile = () => {
                 // Save image to cloudinary
                 const response = await fetch(url, {method: "post", body:image})
                 const imgData = await response.json()
-                console.log(imgData);
-            }           
+                // console.log(imgData);
+                imageURL = imgData.url.toString()
+            }   
             
+            // save image to mongoDb
+            const userData = {
+                photo: profileImage ? imageURL : profile.photo
+            }
+            await dispatch(updatePhoto(userData)) 
+            setImagePreview(null)           
         } catch (error) {
             toast.error(error.message);
         }
